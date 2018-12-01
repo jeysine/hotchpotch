@@ -1,0 +1,187 @@
+group 'cn.com.jeysine'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext {
+        springBootVersion = '2.0.4.RELEASE'
+        log4j2Version = '2.7'
+        slf4jVersion = '1.7.22'
+        druidVersion = '1.1.9'
+        springCloudVersion = 'Finchley.SR1'
+        dependencyManagementPluginVersion = '1.0.6.RELEASE'
+    }
+
+    repositories {
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" } //阿里巴巴Maven库
+        mavenCentral() // 中央库
+    }
+
+    dependencies {
+        //compile group: 'io.spring.gradle', name: 'dependency-management-plugin', version: '1.0.6.RELEASE'
+        classpath ("io.spring.gradle:dependency-management-plugin:${dependencyManagementPluginVersion}")
+        classpath ("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+configure(subprojects.findAll {it.name.contains('process')}) {
+
+}
+
+project("eureka-server") {
+    apply plugin: 'java'
+
+    dependencies {
+        compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-server')
+    }
+}
+
+project("eureka-client") {
+    apply plugin: 'java'
+
+    dependencies {
+        compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
+        compile('org.springframework.boot:spring-boot-starter-web')
+        compile('org.springframework.boot:spring-boot-starter-actuator')
+
+        implementation('org.springframework.cloud:spring-cloud-starter-openfeign')
+    }
+}
+
+project("eureka-feign-client") {
+    apply plugin: 'java'
+
+    dependencies {
+        compile('org.springframework.boot:spring-boot-starter-web')
+        implementation('org.springframework.cloud:spring-cloud-starter-openfeign')
+        implementation('org.springframework.cloud:spring-cloud-starter-zipkin')
+        compile('org.springframework.cloud:spring-cloud-starter-netflix-ribbon')
+        compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
+
+        compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix-dashboard', version: '1.4.5.RELEASE'
+        compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.0.1.RELEASE'
+        compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.0.5.RELEASE'
+
+        compile group: 'de.codecentric', name: 'spring-boot-admin-starter-client', version: '2.0.4'
+    }
+}
+
+project("eurekaclient2") {
+    apply plugin: 'java'
+
+    dependencies {
+        compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
+        compile('org.springframework.boot:spring-boot-starter-web')
+        compile('org.springframework.boot:spring-boot-starter-actuator')
+    }
+}
+
+project("eureka-ribbon-client") {
+    apply plugin: 'java'
+
+    dependencies {
+        compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
+        compile('org.springframework.cloud:spring-cloud-starter-netflix-ribbon')
+        compile('org.springframework.boot:spring-boot-starter-web')
+        compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.0.1.RELEASE'
+        compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix-dashboard', version: '1.4.5.RELEASE'
+        compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.0.5.RELEASE'
+    }
+}
+
+project("turbine") {
+    apply plugin: 'java'
+
+    dependencies {
+        implementation('org.springframework.cloud:spring-cloud-starter-netflix-turbine')
+        compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.0.5.RELEASE'
+        testImplementation('org.springframework.boot:spring-boot-starter-test')
+    }
+}
+
+project("zuul") {
+    apply plugin: 'java'
+
+    dependencies {
+        compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
+        compile('org.springframework.boot:spring-boot-starter-web')
+        implementation('org.springframework.cloud:spring-cloud-starter-netflix-zuul')
+        implementation('org.springframework.cloud:spring-cloud-starter-zipkin')
+    }
+}
+project("zipkin-server") {
+    apply plugin: 'java'
+    dependencies {
+        compile group: 'io.zipkin.java', name: 'zipkin-server', version: '2.11.7'
+        compile group: 'io.zipkin.java', name: 'zipkin-autoconfigure-ui', version: '2.11.7'
+
+        compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
+        implementation('org.springframework.cloud:spring-cloud-starter-zipkin')
+
+    }
+}
+project("admin") {
+    apply plugin: 'java'
+    dependencies {
+        compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
+        compile group: 'org.jolokia', name: 'jolokia-core', version: '1.6.0'
+        compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.0.5.RELEASE'
+        compile group: 'de.codecentric', name: 'spring-boot-admin-server-ui', version: '2.0.4'
+        compile group: 'de.codecentric', name: 'spring-boot-admin-server', version: '2.0.4'
+
+        compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-hystrix-dashboard', version: '1.4.5.RELEASE'
+        compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.0.1.RELEASE'
+        compile group: 'de.codecentric', name: 'spring-boot-admin-server-ui-hystrix', version: '1.5.7'
+
+        implementation('org.springframework.cloud:spring-cloud-starter-netflix-turbine')
+        compile group: 'de.codecentric', name: 'spring-boot-admin-server-ui-turbine', version: '1.5.7'
+
+        compile group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '2.0.6.RELEASE'
+    }
+}
+
+project("uua") {
+    apply plugin: 'java'
+
+    dependencies {
+        compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
+        compile('org.springframework.boot:spring-boot-starter-web')
+        compile('org.springframework.boot:spring-boot-starter-actuator')
+
+        compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-oauth2', version: '2.0.1.RELEASE'
+    }
+}
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    ext {
+        springCloudVersion = 'Finchley.SR1'
+    }
+
+
+    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+    repositories {
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" } //阿里巴巴Maven库
+        mavenCentral() // 中央库
+    }
+
+
+    dependencies {
+        testImplementation('org.springframework.boot:spring-boot-starter-test')
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
+
+    /*configurations {
+        all*.exclude group: 'commons-logging'
+        all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }*/
+}
