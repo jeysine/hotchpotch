@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeysine.services.user.mapper.UserMapper">
+
+    <insert id="save">
+        INSERT INTO
+        dy_user(id, name, sex, id_card, birthday, remark, create_by, create_time, category, username, password, nickname)
+        VALUES (#{id},#{name},#{sex},#{idCard},#{birthday},#{remark},#{createBy},#{createTime}
+        , #{category}, #{username}, #{password}, #{nickname})
+    </insert>
+
+    <insert id="saveBatch">
+        INSERT INTO
+        glasses_user(id, name, sex, id_card, birthday, remark, create_by, create_time, category, username, password, nickname)
+        <foreach collection="list"
+                 item="item"
+                 separator="UNION ALL">
+            SELECT #{item.id}, #{item.name}, #{item.sex}, #{item.idCard}, #{item.birthday}, #{item.remark}
+            ,#{item.createBy}, #{item.createTime}, #{item.category}, #{item.username}, #{item.password}, #{item.nickname}
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE glasses_user
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="idCard != null and idCard != ''">
+                id_card = #{idCard},
+            </if>
+            <if test="birthday != null and birthday != ''">
+                birthday = #{birthday},
+            </if>
+            <if test="remark != null and remark !=''">
+                remark = #{remark},
+            </if>
+            <if test="nickname != null and nickname !=''">
+                nickname = #{nickname},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="resetPassword">
+        UPDATE glasses_user
+        <set>
+            <if test="password != null and password !=''">
+                password = #{password},
+            </if>
+        </set>
+        where username = #{username} AND category = #{category}
+    </update>
+
+    <sql id="from_table" >
+        FROM glasses_user gu
+    </sql>
+
+    <sql id="select_field">
+        SELECT gu.id, gu.name, gu.sex, gu.id_card, gu.birthday, gu.remark, gu.create_by, gu.create_time, gu.username, gu.password, gu.nickname, gu.category
+    </sql>
+
+    <sql id="sql_where">
+        <where>
+            <if test="id != null and id != ''">
+                AND gu.id = #{id}
+            </if>
+            <if test="username != null and username != ''">
+                AND gu.username = #{username}
+            </if>
+            <if test="name != null and name != ''">
+                AND gu.name like '%${name}%'
+            </if>
+            <if test="sex != null and sex != 0">
+                AND gu.sex = #{sex}
+            </if>
+            <if test="idCard != null and idCard != ''">
+                AND gu.id_card = #{idCard}
+            </if>
+            <if test="birthday != null and birthday != ''">
+                AND gu.birthday = #{birthday}
+            </if>
+            <if test="remark != null and remark !=''">
+                AND gu.remark like '%${remark}%'
+            </if>
+            <if test="password != null and password !=''">
+                AND gu.password = #{password}
+            </if>
+            <if test="category != null and category != ''">
+                AND gu.category = #{category}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findByCondition" resultType="UserQM">
+        <include refid="select_field" />
+        <include refid="from_table" />
+        <include refid="sql_where" />
+        ORDER BY gu.create_time DESC
+    </select>
+
+    <select id="findOneByCondition" resultType="UserQM">
+        <include refid="select_field" />
+        <include refid="from_table" />
+        <include refid="sql_where" />
+        ORDER BY gu.create_time desc
+        LIMIT 1
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT count(*)
+        <include refid="from_table" />
+        <include refid="sql_where" />
+    </select>
+
+
+</mapper>

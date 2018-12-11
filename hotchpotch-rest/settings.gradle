@@ -1,0 +1,11 @@
+rootProject.name = 'hotchpotch-rest'
+
+include 'services'
+include 'services:service-common'
+include 'services:service-adminauth'
+include 'services:service-token'
+include 'services:service-user'
+
+include 'process-common'
+include 'process-admin'
+include 'process-app'

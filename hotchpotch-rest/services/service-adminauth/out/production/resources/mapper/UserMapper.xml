@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeysine.services.adminauth.mapper.UserMapper">
+
+    <insert id="save">
+        INSERT INTO
+        pri_user(id,name,password,sex, account, dept, create_by, create_date, status)
+        VALUES
+        (#{id},#{name},#{password},#{sex}, #{account}, #{dept}, #{createBy}, #{createTime}, #{status})
+    </insert>
+
+    <update id="deleteById">
+        DELETE FROM pri_user where id = #{id}
+    </update>
+
+    <update id="update">
+       update pri_user
+       <set>
+           <if test="name != null and name != ''">
+               name = #{name},
+           </if>
+           <if test="dept != null and dept != ''">
+               dept = #{dept},
+           </if>
+           <if test="status != null">
+               status = #{status},
+           </if>
+       </set>
+        <where>
+            <if test="id != null and id != ''">
+                AND id = #{id}
+            </if>
+            <if test="account != null and account != ''">
+                AND account = #{account}
+            </if>
+        </where>
+    </update>
+
+    <sql id="from_table" >
+        FROM pri_user u
+    </sql>
+
+    <sql id="join_user_role" >
+        INNER JOIN pri_user_role ur ON u.id = ur.user_id
+    </sql>
+
+    <sql id="join_role" >
+        INNER JOIN pri_role r ON ur.role_id = r.id
+    </sql>
+
+    <sql id="select_field">
+        SELECT u.id, u.name, u.password, u.sex, u.account, u.dept, u.create_by, u.create_date, u.status
+    </sql>
+
+    <sql id="select_role_field">
+        ,r.name role_name, r.id role_id
+    </sql>
+
+    <sql id="select_user_role_field">
+        ,ur.role_id
+    </sql>
+    <sql id="sql_where">
+        <where>
+            <if test="id != null and id != ''">
+                AND u.id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                AND u.name LIKE '%${name}%'
+            </if>
+            <if test="account != null and account != ''">
+                AND u.account = #{account}
+            </if>
+            <if test="dept != null and dept != ''">
+                AND u.dept LIKE '%${dept}%'
+            </if>
+            <if test="roleName != null and roleName != ''">
+                AND r.name LIKE '%${roleName}%'
+            </if>
+        </where>
+    </sql>
+
+    <select id="findByCondition" resultType="UserQM">
+        <include refid="select_field" />
+        <include refid="select_role_field" />
+        <include refid="from_table" />
+        <include refid="join_user_role" />
+        <include refid="join_role" />
+        <include refid="sql_where" />
+        ORDER BY u.create_date DESC
+    </select>
+
+    <select id="findOneByCondition" resultType="UserQM">
+        <include refid="select_field" />
+        <include refid="select_user_role_field" />
+        <include refid="from_table" />
+        <include refid="join_user_role" />
+        <include refid="sql_where" />
+    </select>
+
+    <select id="findByConditionPage" resultType="UserQM">
+        <include refid="select_field" />
+        <include refid="select_role_field" />
+        <include refid="from_table" />
+        <include refid="join_user_role" />
+        <include refid="join_role" />
+        <include refid="sql_where" />
+        ORDER BY u.create_date DESC;
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT count(*)
+        <include refid="from_table" />
+        <include refid="sql_where" />
+    </select>
+</mapper>

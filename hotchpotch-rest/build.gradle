@@ -1,0 +1,160 @@
+group 'com.jeysine'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext {
+        springBootVersion = '2.0.2.RELEASE'
+        log4j2Version = '2.7'
+        slf4jVersion = '1.7.22'
+        druidVersion = '1.1.9'
+    }
+}
+
+configure(subprojects.findAll {it.name.contains('process')}) {
+
+}
+
+project(':services:service-common') {
+
+}
+
+project(':services:service-user') {
+    apply plugin: 'java'
+    dependencies {
+        compile project(":services:service-common")
+    }
+}
+
+project(':services:service-adminauth') {
+    apply plugin: 'java'
+    dependencies {
+        compile project(":services:service-common")
+    }
+}
+
+project(':services:service-token') {
+    apply plugin: 'java'
+    dependencies {
+        compile group: 'com.auth0', name: 'java-jwt', version: '3.4.1'
+        compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+    }
+}
+
+project(':process-common') {
+    apply plugin: 'java'
+    dependencies {
+        compile project(":services:service-common")
+
+    }
+}
+
+project(':process-admin') {
+    apply plugin: 'java'
+
+    archivesBaseName = 'admin'
+
+    dependencies {
+        compile project(":services:service-adminauth")
+        compile project(":process-common")
+    }
+
+    task('jarPath')<<{
+        configurations.runtime.resolve().each {
+            print it.toString()+";"
+        }
+        println();
+    }
+}
+
+project(':process-app') {
+    apply plugin: 'java'
+
+    archivesBaseName = 'app'
+
+    dependencies {
+        compile project(":services:service-token")
+        compile project(":services:service-user")
+        compile project(":process-common")
+    }
+
+    task('jarPath')<<{
+        configurations.runtime.resolve().each {
+            print it.toString()+";"
+        }
+        println();
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+
+    repositories {
+        mavenLocal() //Maven本地仓库
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" } //阿里巴巴Maven库
+        mavenCentral() // 中央库
+    }
+
+    ext {
+        springBootVersion = '2.0.2.RELEASE'
+        log4j2Version = '2.7'
+        slf4jVersion = '1.7.22'
+        druidVersion = '1.1.9'
+    }
+
+    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+    dependencies {
+
+        /* spring */
+        compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+        compile("org.springframework.boot:spring-boot-starter-data-redis:${springBootVersion}")
+        testCompile('org.springframework.boot:spring-boot-starter')
+        testCompile('org.springframework.boot:spring-boot-starter-test:1.5.3.RELEASE')
+        compile("org.springframework.session:spring-session-data-redis:${springBootVersion}")
+        compile("org.springframework.boot:spring-boot-starter-validation:${springBootVersion}")
+
+        //
+        compile('javax.inject:javax.inject:1')
+        compile("com.github.pagehelper:pagehelper-spring-boot-starter:1.2.5")
+
+        compile("org.springframework.boot:spring-boot-starter-log4j2:${springBootVersion}")
+        compile("org.slf4j:slf4j-api:${slf4jVersion}")
+        runtime("org.slf4j:jcl-over-slf4j:${slf4jVersion}")
+        compile("org.apache.logging.log4j:log4j-web:${log4j2Version}")
+        compile("org.apache.logging.log4j:log4j-slf4j-impl:${log4j2Version}")
+        compile("org.apache.logging.log4j:log4j-api:${log4j2Version}")
+        compile("org.apache.logging.log4j:log4j-core:${log4j2Version}")
+
+        /* commons */
+        compile("commons-lang:commons-lang:2.3")
+        compile("org.apache.commons:commons-lang3:3.6")
+
+        /* alibaba */
+        compile("com.alibaba:druid:${druidVersion}")
+        compile("com.alibaba:druid-spring-boot-starter:${druidVersion}")
+
+        // mybatis
+        compile('org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.1')
+
+        // postgresql
+        runtime("org.postgresql:postgresql:42.2.5")
+
+        // okhttp3
+        compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.4.2'
+
+        compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.0.4.RELEASE'
+
+        // redis
+        compile group: 'redis.clients', name: 'jedis', version: '2.9.0'
+    }
+
+    configurations {
+        all*.exclude group: 'commons-logging'
+        all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+
+    configurations {// remove default logger
+        all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+}

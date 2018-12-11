@@ -1,5 +1,7 @@
 .gradle
 /build/
+/gradle/
+/out/production/
 !gradle/wrapper/gradle-wrapper.jar
 
 ### IntelliJ IDEA ###
