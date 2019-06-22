@@ -1,5 +1,10 @@
 package com.jeysine.services.adminauth.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.apache.ibatis.type.Alias;
 
 /**
@@ -7,32 +12,15 @@ import org.apache.ibatis.type.Alias;
  * @date 2018-09-30
  */
 @Alias("UserQM")
+@Data
+@EqualsAndHashCode(callSuper = false)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDto extends User {
     private String roleId;
 
     private String roleName;
 
-    public String getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(String roleId) {
-        this.roleId = roleId;
-    }
-
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + "UserDto{" +
-                "roleId='" + roleId + '\'' +
-                ", roleName='" + roleName + '\'' +
-                '}';
-    }
+    private String token;
 }

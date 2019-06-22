@@ -9,6 +9,8 @@ import com.jeysine.services.adminauth.service.UserService;
 import com.jeysine.services.common.constants.ApiCode;
 import com.jeysine.services.common.constants.CommonConstants;
 import com.jeysine.services.common.util.Md5Util;
+import com.jeysine.services.redis.service.RedisCacheService;
+import com.jeysine.services.token.service.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,12 @@ public class PublicUserController {
     private Logger logger = LoggerFactory.getLogger(PublicUserController.class);
 
     @Autowired
+    private RedisCacheService redisCacheService;
+
+    @Autowired
+    private TokenService tokenService;
+
+    @Autowired
     public PublicUserController(UserService userService) {
         this.userService = userService;
     }
@@ -49,9 +57,9 @@ public class PublicUserController {
         }
         if (CommonConstants.AdminUserStatusEnum.ACTIVE.getValue().equals(checkUser.getStatus())
                 && Md5Util.MD5Encode(user.getPassword(), SystemConstants.SYSTEM_ENCODING).equals(checkUser.getPassword())) {
-            request.getSession().setAttribute(SystemConstants.USER_SESSION_ID, checkUser.getId());
-            request.getSession().setAttribute(SystemConstants.USER_SESSION_ACCOUNT, checkUser.getName());
-            request.getSession().setAttribute(SystemConstants.USER_SESSION_ROLE_ID, checkUser.getRoleId());
+            String token = tokenService.getToken(user.getAccount(), user.getPassword());
+            user.setToken(token);
+            redisCacheService.setValueWithExpire(CommonConstants.RedisKeyEnum.USER_TOKEN.getCode() + user.getAccount(), token.toUpperCase(), CommonConstants.USER_TOKEN_EXPIRE);
             return new ResponseVO<User>().success(user);
         } else if (CommonConstants.AdminUserStatusEnum.FROZEN.getValue().equals(checkUser.getStatus())) {
             return ResponseVO.error(ApiCode.USER_FROZEN.getStatus(), ApiCode.USER_FROZEN.getMessage());

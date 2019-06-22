@@ -10,10 +10,15 @@ package com.jeysine.process.admin.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeysine.process.common.constants.SystemConstants;
 import com.jeysine.process.common.vo.ResponseVO;
+import com.jeysine.services.common.constants.CommonConstants;
 import com.jeysine.services.common.entity.CommonContextHolder;
+import com.jeysine.services.redis.service.RedisCacheService;
+import com.jeysine.services.token.entity.UserToken;
+import com.jeysine.services.token.service.TokenService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
@@ -34,6 +39,13 @@ public class AdminAuthEndpointFilter extends GenericFilterBean {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    @Autowired
+    private TokenService tokenService;
+
+    @Autowired
+    private RedisCacheService redisCacheService;
+
+
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
@@ -47,18 +59,29 @@ public class AdminAuthEndpointFilter extends GenericFilterBean {
         response.setDateHeader("Expires", 0);
         response.setHeader("Pragma","no-cache");
 
-        String userName = (String) ((HttpServletRequest) req).getSession().getAttribute(SystemConstants.USER_SESSION_ACCOUNT);
-        String userId = (String) ((HttpServletRequest) req).getSession().getAttribute(SystemConstants.USER_SESSION_ID);
-        String roleId = (String) ((HttpServletRequest) req).getSession().getAttribute(SystemConstants.USER_SESSION_ROLE_ID);
-        if (!StringUtils.isEmpty(userName)) {
-            CommonContextHolder.setUserName(userName);
-            CommonContextHolder.setUserId(userId);
-            CommonContextHolder.setRoleId(roleId);
-            chain.doFilter(request, response);
-            CommonContextHolder.clear();
+        String token = ((HttpServletRequest) req).getHeader(CommonConstants.APP_TOKEN);
+        if (!StringUtils.isEmpty(token)) {
+            UserToken userToken = tokenService.decodeToken(token);
+            Object tokenObj = redisCacheService.get(CommonConstants.RedisKeyEnum.USER_TOKEN.getCode() + userToken.getUsername());
+            if (tokenObj instanceof String) {
+                if (!StringUtils.isBlank(((String) tokenObj).toUpperCase()) && token.equals(((String) tokenObj).toUpperCase())) {
+                    CommonContextHolder.setUserName(userToken.getUsername());
+                    redisCacheService.setValueWithExpire(CommonConstants.RedisKeyEnum.USER_TOKEN.getCode() + userToken.getUsername(), token, CommonConstants.USER_TOKEN_EXPIRE);
+                    chain.doFilter(request, response);
+                    CommonContextHolder.clear();
+                } else {
+                    noLogin(response);
+                }
+            } else {
+                noLogin(response);
+            }
         } else {
-            ResponseVO result = ResponseVO.noLogin();
-            response.getWriter().write(mapper.writeValueAsString(result));
+            noLogin(response);
         }
+    }
+
+    private void noLogin(HttpServletResponse response) throws IOException {
+        ResponseVO result = ResponseVO.noLogin();
+        response.getWriter().write(mapper.writeValueAsString(result));
     }
 }

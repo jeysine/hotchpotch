@@ -43,6 +43,7 @@
             <if test="nickname != null and nickname !=''">
                 nickname = #{nickname},
             </if>
+
         </set>
         where id = #{id}
     </update>
@@ -87,9 +88,6 @@
             </if>
             <if test="remark != null and remark !=''">
                 AND gu.remark like '%${remark}%'
-            </if>
-            <if test="password != null and password !=''">
-                AND gu.password = #{password}
             </if>
             <if test="category != null and category != ''">
                 AND gu.category = #{category}

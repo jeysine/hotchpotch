@@ -9,21 +9,21 @@ spring:
   profiles:
     active: dev
   redis:
-    host: localhost
-    port: 60000
+    host: 39.108.91.164
+    port: 63790
     database: 0
     jedis:
       pool:
         max-idle: 10
         min-idle: 5
         max-active: 20
-    password: 123456
+    password: H89ZB$p1il5G@m*6
     timeout: 30s
   jeysine:
     datasource:
-      url: jdbc:postgresql://localhost:5432/hotchpotch
-      username: jeysine
-      password: 0
+      url: jdbc:postgresql://39.108.251.110:54320/hotchpotch
+      username: postgres
+      password: H89ZB$p1il5G@m*6
       driver-class-name: org.postgresql.Driver
       type: com.alibaba.druid.pool.DruidDataSource
       #阿里DruidDataSource配置
@@ -34,7 +34,7 @@ spring:
         maxWait: 60000
         timeBetweenEvictionRunsMillis: 60000
         minEvictableIdleTimeMills: 300000
-        validationQuery: SELECT 1 FROM DUAL
+        validationQuery: SELECT version
         testWhileIdle: true
         testOnBorrow: false
         testOnReturn: false
@@ -47,7 +47,12 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
-    default-property-inclusion: non_empty
+    default-property-inclusion: non_null
+
+  data:
+    elasticsearch:
+      cluster-name: my-application
+      cluster-nodes: 39.108.251.110:9300
 
 logging:
   pattern:

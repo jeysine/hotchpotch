@@ -1,6 +1,8 @@
 package com.jeysine.services.adminauth.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jeysine.services.common.entity.Base;
+import lombok.*;
 import org.apache.ibatis.type.Alias;
 
 /**
@@ -8,6 +10,12 @@ import org.apache.ibatis.type.Alias;
  * @date 2018-09-30
  */
 @Alias("RoleM")
+@Data
+@EqualsAndHashCode(callSuper = false)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Role extends Base {
     private String name;
 
@@ -15,36 +23,4 @@ public class Role extends Base {
 
     private Boolean active;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + "Role{" +
-                "name='" + name + '\'' +
-                ", code='" + code + '\'' +
-                ", active='" + active + '\'' +
-                '}';
-    }
 }
