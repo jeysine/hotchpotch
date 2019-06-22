@@ -61,9 +61,7 @@ public class PublicProductController {
         productDocument2.setProductName("资生堂(SHISEIDO) 尿素红罐护手霜");
         productDocument2.setProductDesc("日本进口 资生堂(SHISEIDO) 尿素红罐护手霜 100g/罐 男女通用 深层滋养 改善粗糙");
         productDocument2.setCreateTime(new Date());
-
-        //elasticsearchTemplate.createIndex(Product.class);
-        //elasticsearchRepository.save(productDocument);
+        
         productSearchService.save(productDocument, productDocument1, productDocument2);
 
         log.info("【创建索引ID】:{},{},{}", productDocument.getId(), productDocument1.getId(), productDocument2.getId());
