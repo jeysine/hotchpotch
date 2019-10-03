@@ -7,12 +7,11 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Mapping;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * @author yaojx
  */
-@Document(indexName = "orders", type = "product")
+@Document(indexName = "product", type = "docs")
 @Mapping(mappingPath = "productIndex.json")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -24,7 +23,7 @@ public class Product implements Serializable {
 
     private String productDesc;
 
-    private Date createTime;
+    private String createTime;
 
-    private Date updateTime;
+    private String updateTime;
 }

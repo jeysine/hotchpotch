@@ -2,9 +2,9 @@ package com.jeysine.process.admin.controller.product;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jeysine.services.common.util.DateUtils;
 import com.jeysine.services.common.util.UuidUtil;
 import com.jeysine.services.elasticsearch.document.Product;
-import com.jeysine.services.elasticsearch.repository.ProductDocumentRepository;
 import com.jeysine.services.elasticsearch.service.ProductSearchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,6 @@ public class PublicProductController {
 
     @GetMapping("/")
     public void test() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, JsonProcessingException {
-        log.info("【创建索引前的数据条数】:删除");
         productSearchService.deleteAll();
         log.info("【创建索引前的数据条数】：{}",productSearchService.getAll().size());
 
@@ -47,21 +46,21 @@ public class PublicProductController {
         productDocument.setId(UuidUtil.getUuid());
         productDocument.setProductName("无印良品 MUJI 基础润肤化妆水");
         productDocument.setProductDesc("无印良品 MUJI 基础润肤化妆水 高保湿型 200ml");
-        productDocument.setCreateTime(new Date());
+        productDocument.setCreateTime(DateUtils.getDateFormatter(new Date(), "yyyy-MM-dd HH:mm:ss"));
 
 
         Product productDocument1 = new Product();
         productDocument1.setId(UuidUtil.getUuid());
         productDocument1.setProductName("荣耀 V10 尊享版");
         productDocument1.setProductDesc("荣耀 V10 尊享版 6GB+128GB 幻夜黑 移动联通电信4G全面屏游戏手机 双卡双待");
-        productDocument1.setCreateTime(new Date());
+        productDocument1.setCreateTime(DateUtils.getDateFormatter(new Date(), "yyyy-MM-dd HH:mm:ss"));
 
         Product productDocument2 = new Product();
         productDocument2.setId(UuidUtil.getUuid());
         productDocument2.setProductName("资生堂(SHISEIDO) 尿素红罐护手霜");
         productDocument2.setProductDesc("日本进口 资生堂(SHISEIDO) 尿素红罐护手霜 100g/罐 男女通用 深层滋养 改善粗糙");
-        productDocument2.setCreateTime(new Date());
-        
+        productDocument2.setCreateTime(DateUtils.getDateFormatter(new Date(), "yyyy-MM-dd HH:mm:ss"));
+
         productSearchService.save(productDocument, productDocument1, productDocument2);
 
         log.info("【创建索引ID】:{},{},{}", productDocument.getId(), productDocument1.getId(), productDocument2.getId());
@@ -70,8 +69,8 @@ public class PublicProductController {
 
         productSearchService.getAll().forEach(System.out::println);
 
-        String keyword = "MUJI";
-        String indexName = "orders";
+        String keyword = "日本改善粗糙";
+        String indexName = "product";
 
         List<Product> searchHits = productSearchService.queryHit(keyword, indexName, Product.class, "productName","productDesc");
         log.info("【根据关键字搜索内容，命中部分高亮，返回内容】：{}", OBJECT_MAPPER.writeValueAsString(searchHits));

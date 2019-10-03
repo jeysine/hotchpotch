@@ -77,6 +77,17 @@ project(':services:service-elasticsearch') {
     dependencies {
         compile project(":services:service-common")
         compile("org.springframework.boot:spring-boot-starter-data-elasticsearch:2.1.1.RELEASE")
+
+    }
+}
+
+project(':services:service-elasticsearch-jest') {
+    apply plugin: 'java'
+    dependencies {
+        compile project(":services:service-common")
+        compile group: 'io.searchbox', name: 'jest', version: '6.3.1'
+        compile group: 'org.elasticsearch', name: 'elasticsearch', version: '6.7.1'
+        compile group: 'org.elasticsearch.client', name: 'elasticsearch-rest-high-level-client', version: '6.7.1'
     }
 }
 

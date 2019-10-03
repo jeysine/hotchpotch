@@ -51,6 +51,8 @@ spring:
 
   data:
     elasticsearch:
+      url: http://39.108.251.110:9200
+      read-timeout: 10000
       cluster-name: my-application
       cluster-nodes: 39.108.251.110:9300
 

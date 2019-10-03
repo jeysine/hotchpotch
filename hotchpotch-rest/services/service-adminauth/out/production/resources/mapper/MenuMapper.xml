@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeysine.services.adminauth.mapper.MenuMapper">
+
+    <insert id="save">
+        INSERT INTO
+        pri_menu(id, title, index, icon, keep_alive, parent_id, level)
+        VALUES
+        (#{id}, #{title}, #{index}, #{icon}, #{keepAlive}, #{parentId}, #{level})
+    </insert>
+
+    <sql id="sql_where">
+        <where>
+            <if test="id != null and id != ''">
+                AND id = #{id}
+            </if>
+            <if test="title != null and title != ''">
+                AND title = #{title}
+            </if>
+            <if test="parentId != null and parentId != ''">
+                AND parent_id = #{parentId}
+            </if>
+            <if test="level != null and level != ''">
+                AND level = #{level}
+            </if>
+            <if test="keepAlive != null and keepAlive != ''">
+                AND keep_alive = #{keepAlive}
+            </if>
+            <if test="roleId != null and roleId != ''">
+                AND mr.role_id = #{roleId}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="select_field">
+        SELECT m.id, m."index", m.title, m.icon, m.keep_alive, m.parent_id, m.level
+    </sql>
+
+    <sql id="select_menu_role_field">
+        ,mr.id menu_role_id
+    </sql>
+
+    <sql id="from_table">
+        FROM pri_menu m
+    </sql>
+
+    <sql id="join_menu_role">
+        RIGHT JOIN pri_menu_role mr ON m.id = mr.menu_id
+    </sql>
+
+    <sql id="join_user_role">
+        LEFT JOIN pri_user_role ur  ON mr.role_id = ur.id
+    </sql>
+
+    <sql id="join_user">
+        LEFT JOIN pri_user u ON m.ur.user_id = u.id
+    </sql>
+
+    <select id="findByCondition" resultType="MenuQM">
+        <include refid="select_field"/>
+        <include refid="from_table"/>
+        <include refid="sql_where" />
+        ORDER BY m.id
+    </select>
+
+
+    <select id="findRoleMenuByCondition" resultType="MenuQM">
+        <include refid="select_field"/>
+        <include refid="select_menu_role_field"/>
+        <include refid="from_table" />
+        <include refid="join_menu_role" />
+        <include refid="sql_where" />
+        ORDER BY m.id
+    </select>
+
+    <select id="findOneByCondition" resultType="MenuQM">
+        <include refid="select_field"/>
+        <include refid="from_table" />
+        <include refid="sql_where" />
+    </select>
+
+</mapper>

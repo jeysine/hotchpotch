@@ -8,6 +8,7 @@ include 'services:service-user'
 include 'services:service-redis'
 include 'services:service-websocket'
 include 'services:service-elasticsearch'
+include 'services:service-elasticsearch-jest'
 
 include 'process-common'
 include 'process-admin'
